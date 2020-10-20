@@ -1,6 +1,6 @@
 package fibonacci
 
-// Calculates Fibonacci number
+// Calculate Fibonacci number
 func Calculate(n int) int {
 	if n == 0 {
 		return 0
