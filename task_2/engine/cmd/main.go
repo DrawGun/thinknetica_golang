@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-const url = "https://pikabu.ru/"
+const url = "https://yandex.ru/"
 const depth = 2
 
 func main() {
@@ -25,16 +25,26 @@ func main() {
 
 	for {
 		fmt.Print("-> ")
-		text, _ := reader.ReadString('\n')
+		text, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		text = strings.ReplaceAll(text, "\r\n", "")
 		text = strings.ReplaceAll(text, "\n", "")
 
 		if strings.Compare("", text) == 0 || strings.Compare("exit", text) == 0 {
 			break
 		}
-
+		
+		lt := strings.ToLower(text)
 		for k, v := range titles {
-			if strings.Contains(k, text) || strings.Contains(v, text) {
-				fmt.Printf("%s -> '%s'\n", k, v)
+			lk := strings.ToLower(k)
+			lv := strings.ToLower(v)
+			
+			if strings.Contains(lk, lt) || strings.Contains(lv, lt) {
+				fmt.Printf("%s -> '%s'\n", lk, lv)
 			}
 		}
 	}
