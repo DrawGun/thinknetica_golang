@@ -14,7 +14,7 @@ const depth = 2
 func main() {
 	var eng = engine.New(url, depth)
 
-	results, err := eng.Scan(eng.Crw)
+	results, err := eng.Results()
 	if err != nil {
 		fmt.Println(err)
 		return

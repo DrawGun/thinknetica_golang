@@ -8,9 +8,9 @@ import (
 
 // Engine struct
 type Engine struct {
-	Crw   *crawler.Crawler
 	URL   string
 	depth int
+	crw   *crawler.Crawler
 }
 
 // Scanner - интерфейс для работы с crawler
@@ -22,15 +22,21 @@ type Scanner interface {
 func New(url string, depth int) *Engine {
 	var crw = crawler.New(url, depth)
 	e := Engine{
-		Crw:   crw,
 		URL:   url,
 		depth: depth,
+		crw:   crw,
 	}
 	return &e
 }
 
+// Results - запускает Scan и возвращает его резальтаты
+func (e *Engine) Results() (map[string]string, error) {
+	results, err := Scan(e.crw)
+	return results, err
+}
+
 // Scan - сканирует сайт и возвращает разультат в виде ассоциативного массива
-func (e *Engine) Scan(s Scanner) (map[string]string, error) {
+func Scan(s Scanner) (map[string]string, error) {
 	results, err := s.Scan()
 	if err != nil {
 		return make(map[string]string), err

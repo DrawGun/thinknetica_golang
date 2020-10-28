@@ -10,9 +10,7 @@ const depth = 2
 
 func TestScan(t *testing.T) {
 	s := new(stub.Scanner)
-
-	var eng = New(url, depth)
-	data, err := eng.Scan(s)
+	data, err := Scan(s)
 	if err != nil {
 		t.Fatal(err)
 	}
