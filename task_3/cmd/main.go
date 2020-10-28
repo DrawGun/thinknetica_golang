@@ -4,7 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"pkg/engine"
+	"pkg/crawler"
+	"pkg/spider"
 	"strings"
 )
 
@@ -12,9 +13,9 @@ const url = "https://yandex.ru/"
 const depth = 2
 
 func main() {
-	var eng = engine.New(url, depth)
+	var spid = spider.New()
 
-	results, err := eng.Results()
+	results, err := Results(spid, url, depth)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -37,10 +38,30 @@ func main() {
 			break
 		}
 
-		data := eng.Search(results, phrase)
+		data := search(results, phrase)
 
 		for _, v := range data {
 			fmt.Println(v)
 		}
 	}
+}
+
+// Results возвращает массив по вхождению строки
+func Results(s crawler.Scanner, url string, depth int) (data []crawler.Document, err error) {
+	return s.Scan(url, depth)
+}
+
+func search(res []crawler.Document, phrase string) []string {
+	var found []string
+
+	lp := strings.ToLower(phrase)
+	for _, doc := range res {
+		lt := strings.ToLower(doc.Title)
+		lu := strings.ToLower(doc.URL)
+
+		if strings.Contains(lt, lp) || strings.Contains(lu, lp) {
+			found = append(found, fmt.Sprintf("%s -> '%s'", doc.Title, doc.URL))
+		}
+	}
+	return found
 }
