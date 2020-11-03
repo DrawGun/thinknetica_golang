@@ -12,46 +12,34 @@ import (
 )
 
 // Service - служба поискового робота.
-type Service struct {
-	counter int
-	url     string
-	depth   int
-}
+type Service struct{}
 
 // New - констрктор службы поискового робота.
-func New(url string, depth int) *Service {
-	s := Service{
-		counter: 0,
-		url:     url,
-		depth:   depth,
-	}
+func New() *Service {
+	s := Service{}
 	return &s
 }
 
 // Scan осуществляет рекурсивный обход ссылок сайта, указанного в URL,
 // с учётом глубины перехода по ссылкам, переданной в depth.
-func (s *Service) Scan() (data []crawler.Document, err error) {
+func (s *Service) Scan(url string, depth int) (data []crawler.Document, err error) {
 	pages := make(map[string]string)
 
-	parse(s.url, s.url, s.depth, pages)
+	parse(url, url, depth, pages)
 
+	var counter = 0
 	for url, title := range pages {
 		item := crawler.Document{
-			ID:    s.counter,
+			ID:    counter,
 			URL:   url,
 			Title: title,
 		}
 		data = append(data, item)
 
-		s.counter++
+		counter++
 	}
 
 	return data, nil
-}
-
-// Results попытка запуска Scan
-func (s *Service) Results(c crawler.Scanner) (data []crawler.Document, err error) {
-	return c.Scan()
 }
 
 // parse рекурсивно обходит ссылки на странице, переданной в url.

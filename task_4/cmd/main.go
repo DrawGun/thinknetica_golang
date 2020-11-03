@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"pkg/crawler"
 	"pkg/index"
 	"pkg/spider"
 	"strings"
@@ -13,15 +14,15 @@ const url = "https://yandex.ru/"
 const depth = 2
 
 func main() {
-	var spid = spider.New(url, depth)
-	webData, err := spid.Results(spid)
+	var spid = spider.New()
+	webData, err := Results(spid, url, depth)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	ind := index.New(webData)
-	ind.Process()
+	ind.ParseStorage()
 
 	reader := bufio.NewReader(os.Stdin)
 	for {
@@ -45,4 +46,9 @@ func main() {
 			fmt.Println(v)
 		}
 	}
+}
+
+// Results возвращает массив просканированных ссылок
+func Results(s crawler.Scanner, url string, depth int) (data []crawler.Document, err error) {
+	return s.Scan(url, depth)
 }

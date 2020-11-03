@@ -43,8 +43,8 @@ func (i *Index) Search(phrase string) []string {
 	return found
 }
 
-// Process заполняет индекс исходя из данных в storage
-func (i *Index) Process() {
+// ParseStorage заполняет индекс исходя из данных в storage
+func (i *Index) ParseStorage() {
 	for _, document := range i.storage {
 		i.ParseAndFillIndex(document.ID, document.URL, "/", "?#:")
 		i.ParseAndFillIndex(document.ID, document.Title, " ", "«()/,-")

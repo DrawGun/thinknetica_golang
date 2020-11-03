@@ -2,7 +2,7 @@ package crawler
 
 // Scanner - интерфейс поискового робота.
 type Scanner interface {
-	Scan() ([]Document, error)
+	Scan(url string, depth int) (data []Document, err error)
 }
 
 // Document - документ, веб-страница, полученная поисковым роботом.
