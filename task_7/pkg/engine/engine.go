@@ -3,23 +3,20 @@ package engine
 import (
 	"fmt"
 	"pkg/btree"
-	"pkg/crawler"
 	"pkg/index"
 	"pkg/storage"
 )
 
 // Service - поисковый движок.
 type Service struct {
-	Crawler crawler.Scanner
 	Storage storage.Dataprocessor
 	Index   index.AddSearcher
 	tree    btree.Tree
 }
 
 // New создает новый экземпляр типа Service
-func New(crw crawler.Scanner, store storage.Dataprocessor, ind index.AddSearcher) *Service {
+func New(store storage.Dataprocessor, ind index.AddSearcher) *Service {
 	srv := Service{
-		Crawler: crw,
 		Storage: store,
 		Index:   ind,
 		tree:    btree.Tree{},

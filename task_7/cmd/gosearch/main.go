@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"pkg/crawler"
 	"pkg/crawler/spider"
 	"pkg/engine"
 	"pkg/index/hash"
@@ -14,15 +15,45 @@ import (
 const url = "https://yandex.ru/"
 const depth = 2
 
+// Service - сервер интернет-поисковика.
+type Service struct {
+	crawler crawler.Scanner
+	engine  *engine.Service
+}
+
 func main() {
-	spid := spider.New()
+	service := new()
+
+	go service.scan(url, depth)
+	service.readline()
+}
+
+func new() *Service {
 	store := memstore.New()
 	ind := hash.New()
 
-	eng := engine.New(spid, store, ind)
-	eng.PrepareDataForSearch()
+	s := Service{
+		crawler: spider.New(),
+		engine:  engine.New(store, ind),
+	}
 
-	go backgroundUpdates(eng)
+	return &s
+}
+
+// запуск процесса сканирования индексирования и сохранения информации в storage в отдельном процессе
+func (srv *Service) scan(url string, depth int) {
+	webDocs, err := srv.crawler.Scan(url, depth)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	srv.engine.Storage.StoreDocs(webDocs)
+	srv.engine.PrepareDataForSearch()
+}
+
+func (srv *Service) readline() {
+	srv.engine.PrepareDataForSearch()
 
 	reader := bufio.NewReader(os.Stdin)
 	for {
@@ -39,7 +70,7 @@ func main() {
 			break
 		}
 
-		data, err := eng.Search(phrase)
+		data, err := srv.engine.Search(phrase)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -49,16 +80,4 @@ func main() {
 			fmt.Println(v)
 		}
 	}
-}
-
-// запуск процесса сканирования индексирования и сохранения информации в storage в отдельном процессе
-func backgroundUpdates(eng *engine.Service) {
-	webDocs, err := eng.Crawler.Scan(url, depth)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	eng.Storage.StoreDocs(webDocs)
-	eng.PrepareDataForSearch()
 }
