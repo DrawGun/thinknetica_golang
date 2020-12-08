@@ -14,8 +14,14 @@ replace pkg/storage/teststore => ../storage/teststore
 require pkg/crawler v1.0.0
 replace pkg/crawler => ../../pkg/crawler
 
-require pkg/btree v1.0.0
-replace pkg/btree => ../../pkg/btree
+require pkg/search v1.0.0
+replace pkg/search => ../../pkg/search
+
+require pkg/search/btree v1.0.0
+replace pkg/search/btree => ../../pkg/search/btree
+
+require pkg/search/array v1.0.0
+replace pkg/search/array => ../../pkg/search/array
 
 require pkg/crawler/stubcrw v1.0.0
 replace pkg/crawler/stubcrw => ../crawler/stubcrw

@@ -5,5 +5,5 @@ go 1.15
 require pkg/crawler v1.0.0
 replace pkg/crawler => ../../crawler
 
-require pkg/teststore v1.0.0
-replace pkg/teststore => ../teststore
+require pkg/storage/teststore v1.0.0
+replace pkg/storage/teststore => ../teststore

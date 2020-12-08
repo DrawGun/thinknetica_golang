@@ -8,6 +8,7 @@ import (
 	"pkg/crawler/spider"
 	"pkg/engine"
 	"pkg/index/hash"
+	"pkg/search/btree"
 	"pkg/storage/memstore"
 	"strings"
 )
@@ -31,10 +32,11 @@ func main() {
 func new() *Service {
 	store := memstore.New()
 	ind := hash.New()
+	srch := btree.New()
 
 	s := Service{
 		crawler: spider.New(),
-		engine:  engine.New(store, ind),
+		engine:  engine.New(store, ind, srch),
 	}
 
 	return &s

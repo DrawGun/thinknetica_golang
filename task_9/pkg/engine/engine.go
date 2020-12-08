@@ -2,8 +2,8 @@ package engine
 
 import (
 	"fmt"
-	"pkg/btree"
 	"pkg/index"
+	"pkg/search"
 	"pkg/storage"
 )
 
@@ -11,15 +11,15 @@ import (
 type Service struct {
 	Storage storage.Dataprocessor
 	Index   index.AddSearcher
-	tree    btree.Tree
+	search  search.DataSearcher
 }
 
 // New создает новый экземпляр типа Service
-func New(store storage.Dataprocessor, ind index.AddSearcher) *Service {
+func New(store storage.Dataprocessor, ind index.AddSearcher, srch search.DataSearcher) *Service {
 	srv := Service{
 		Storage: store,
 		Index:   ind,
-		tree:    btree.Tree{},
+		search:  srch,
 	}
 	return &srv
 }
@@ -31,7 +31,7 @@ func (srv *Service) PrepareData() error {
 	srv.Index.Add(&docs)
 
 	for _, document := range docs {
-		srv.tree.Insert(document)
+		srv.search.Insert(document)
 	}
 
 	return nil
@@ -44,7 +44,7 @@ func (srv *Service) Search(phrase string) ([]string, error) {
 	ids := srv.Index.Search(phrase)
 
 	for _, id := range ids {
-		document, ok := srv.tree.Search(id)
+		document, ok := srv.search.Search(id)
 
 		if ok {
 			found = append(found, fmt.Sprintf("%s - %s", document.URL, document.Title))

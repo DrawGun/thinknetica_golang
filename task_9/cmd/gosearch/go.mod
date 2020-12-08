@@ -2,8 +2,14 @@ module thinknetica_golang/task_9/gosearch
 
 go 1.15
 
-require pkg/btree v1.0.0
-replace pkg/btree => ../../../task_9/pkg/btree
+require pkg/search v1.0.0
+replace pkg/search => ../../../task_9/pkg/search
+
+require pkg/search/btree v1.0.0
+replace pkg/search/btree => ../../../task_9/pkg/search/btree
+
+require pkg/search/array v1.0.0
+replace pkg/search/array => ../../../task_9/pkg/search/array
 
 require pkg/crawler v1.0.0
 replace pkg/crawler => ../../../task_9/pkg/crawler

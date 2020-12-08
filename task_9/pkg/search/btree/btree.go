@@ -17,6 +17,12 @@ type Element struct {
 	value       crawler.Document
 }
 
+// New создает новый экземпляр типа Tree
+func New() *Tree {
+	t := Tree{}
+	return &t
+}
+
 // Insert - вставка элемента в дерево
 func (t *Tree) Insert(doc crawler.Document) {
 	newEl := &Element{value: doc}
@@ -85,21 +91,21 @@ func prettyPrint(e *Element, spaces int) (res string) {
 	return res
 }
 
-// TreeTops - возвращает массив вершин дерева
-func (t Tree) TreeTops() []int {
-	tops := []int{}
-	t.root.collect(&tops)
+// Ids - возвращает массив вершин дерева
+func (t Tree) Ids() []int {
+	ids := []int{}
+	t.root.collect(&ids)
 
-	return tops
+	return ids
 }
 
-func (e *Element) collect(tops *[]int) {
+func (e *Element) collect(ids *[]int) {
 	if e == nil {
 		return
 	}
 
-	*tops = append(*tops, e.value.ID)
+	*ids = append(*ids, e.value.ID)
 
-	e.left.collect(tops)
-	e.right.collect(tops)
+	e.left.collect(ids)
+	e.right.collect(ids)
 }

@@ -26,7 +26,7 @@ func TestService_PrepareData(t *testing.T) {
 	}
 
 	var want = []int{0, 1}
-	got := eng.tree.TreeTops()
+	got := eng.search.Ids()
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v; want %v", got, want)
 	}
