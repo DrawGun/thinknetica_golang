@@ -1,1 +1,5 @@
 go.sum
+
+task_10/cmd/gosearch/webapp/
+task_10/doc/
+task_10/web/
