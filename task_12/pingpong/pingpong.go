@@ -13,13 +13,12 @@ type player struct {
 }
 
 type game struct {
-	player1 player
-	player2 player
-	server  *player
+	player1 *player
+	player2 *player
 	ch      chan string
 }
 
-func newGame(p1 player, p2 player) *game {
+func newGame(p1 *player, p2 *player) *game {
 	s := game{
 		player1: p1,
 		player2: p2,
@@ -28,38 +27,21 @@ func newGame(p1 player, p2 player) *game {
 	return &s
 }
 
-func (g *game) chooseServer() {
-	if g.randChoose(50) {
-		g.server = &g.player1
-	} else {
-		g.server = &g.player1
-	}
-}
-
-func (g *game) Serve(hit string) {
-	fmt.Printf("Подает игрок -> %v: %s\n", g.server.name, hit)
+func (g *game) Serve(pl *player, hit string) {
+	fmt.Printf("Игрок %s -> %s\n", pl.name, hit)
 
 	if g.randChoose(20) {
-		g.server.score++
-		fmt.Println("\tУспешная подача!!!", g.server)
+		fmt.Println("\tУспешная подача!!!")
+		pl.score++
 	}
 
-	time.Sleep(time.Second)
-
-	if g.server.score > 10 {
+	if pl.score > 10 {
 		hit = "Stop"
 	}
 
-	g.ch <- hit
-	g.changeActivity()
-}
+	// time.Sleep(time.Millisecond * 200)
 
-func (g *game) changeActivity() {
-	if *g.server == g.player1 {
-		g.server = &g.player2
-	} else {
-		g.server = &g.player1
-	}
+	g.ch <- hit
 }
 
 func (g *game) randChoose(p int) bool {
@@ -71,10 +53,6 @@ func (g *game) randChoose(p int) bool {
 	return false
 }
 
-func (g *game) finalScore() {
-	fmt.Println(g)
-}
-
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	wg := sync.WaitGroup{}
@@ -82,12 +60,10 @@ func main() {
 
 	p1 := player{name: "Player_1"}
 	p2 := player{name: "Player_2"}
-	game := newGame(p1, p2)
+	game := newGame(&p1, &p2)
 
-	go play(p1, game, &wg)
-	go play(p2, game, &wg)
-
-	game.chooseServer()
+	go play(&p1, game, &wg)
+	go play(&p2, game, &wg)
 
 	game.ch <- "begin"
 	wg.Wait()
@@ -95,19 +71,24 @@ func main() {
 	game.finalScore()
 }
 
-func play(pl player, game *game, wg *sync.WaitGroup) {
+func play(pl *player, game *game, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	for val := range game.ch {
 		switch val {
 		case "begin":
-			game.Serve("Ping")
+			game.Serve(pl, "Ping")
 		case "Ping":
-			game.Serve("Pong")
+			game.Serve(pl, "Pong")
 		case "Pong":
-			game.Serve("Ping")
+			game.Serve(pl, "Ping")
 		case "Stop":
 			close(game.ch)
 		}
 	}
+}
+
+func (g *game) finalScore() {
+	fmt.Println("\tScore")
+	fmt.Printf("%s(%v) : %s(%v)\n", g.player1.name, g.player1.score, g.player2.name, g.player2.score)
 }
