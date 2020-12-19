@@ -92,6 +92,8 @@ func (srv *Service) scan() {
 			srv.engine.UpdateData(updatedDocs)
 		}
 	}(rawDocs)
+
+	wg.Wait()
 }
 
 func (srv *Service) scanWorker(wg *sync.WaitGroup, jobs <-chan siteToScan, results chan<- []crawler.Document) {
