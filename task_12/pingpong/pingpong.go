@@ -33,20 +33,20 @@ func (g *game) Serve(pl *player, hit string) {
 	if g.randChoose(20) {
 		fmt.Println("\tУспешная подача!!!")
 		pl.score++
+		hit = "begin"
 	}
 
 	if pl.score > 10 {
 		hit = "Stop"
 	}
 
-	// time.Sleep(time.Millisecond * 200)
+	time.Sleep(time.Millisecond * 100)
 
 	g.ch <- hit
 }
 
 func (g *game) randChoose(p int) bool {
-	n := rand.Intn(100)
-	if n < p {
+	if rand.Intn(100) < p {
 		return true
 	}
 
