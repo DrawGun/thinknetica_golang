@@ -3,6 +3,7 @@ package netsrv
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"net"
 	"strings"
@@ -15,32 +16,26 @@ type engine interface {
 
 // Netsrv подключаемый пакет
 type Netsrv struct {
-	eng  engine
-	netw string
-	addr string
+	eng      engine
+	listener net.Listener
 }
 
 // New позволяет создать новый объект с заданными настройками
-func New(eng engine, network, address string) *Netsrv {
+func New(eng engine, network, address string) (*Netsrv, error) {
+	listener, err := net.Listen(network, address)
+
 	n := Netsrv{
-		eng:  eng,
-		netw: network,
-		addr: address,
+		eng:      eng,
+		listener: listener,
 	}
 
-	return &n
+	return &n, err
 }
 
 // Run запуск подключаемого пакета
 func (n *Netsrv) Run() {
-	listener, err := net.Listen(n.netw, n.addr)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
 	for {
-		conn, err := listener.Accept()
+		conn, err := n.listener.Accept()
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -71,14 +66,16 @@ func (n *Netsrv) handleConn(conn net.Conn) {
 			fmt.Println(err)
 			return
 		}
-
-		for _, v := range data {
-			msg := []byte(v + "\n")
-
-			_, err = conn.Write(msg)
-			if err != nil {
-				return
-			}
+		resp, err := json.Marshal(data)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		resp = append(resp, '\n')
+		_, err = conn.Write(resp)
+		if err != nil {
+			fmt.Println(err)
+			return
 		}
 	}
 }

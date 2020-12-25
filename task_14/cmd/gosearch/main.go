@@ -46,8 +46,12 @@ func main() {
 
 	go service.scan()
 
-	nsrv := netsrv.New(service.engine, "tcp4", ":8000")
-	nsrv.Run()
+	nsrv, err := netsrv.New(service.engine, "tcp4", ":8000")
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		nsrv.Run()
+	}
 }
 
 func new() *Service {
