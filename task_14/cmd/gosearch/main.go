@@ -45,12 +45,12 @@ func main() {
 	service := new()
 
 	go service.scan()
-
-	nsrv, err := netsrv.New(service.engine, "tcp4", ":8000")
+	nsrv := netsrv.New(service.engine)
+	listener, err := netsrv.NewListener("tcp4", ":8000")
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		nsrv.Run()
+		nsrv.Run(listener)
 	}
 }
 

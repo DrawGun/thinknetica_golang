@@ -16,26 +16,32 @@ type engine interface {
 
 // Netsrv подключаемый пакет
 type Netsrv struct {
-	eng      engine
-	listener net.Listener
+	eng engine
 }
 
-// New позволяет создать новый объект с заданными настройками
-func New(eng engine, network, address string) (*Netsrv, error) {
-	listener, err := net.Listen(network, address)
-
+// New позволяет создать новый объект
+func New(eng engine) *Netsrv {
 	n := Netsrv{
-		eng:      eng,
-		listener: listener,
+		eng: eng,
 	}
 
-	return &n, err
+	return &n
+}
+
+// NewListener позволяет создать новый объект с заданными настройками
+func NewListener(network, address string) (net.Listener, error) {
+	listener, err := net.Listen(network, address)
+	if err != nil {
+		return nil, err
+	}
+
+	return listener, err
 }
 
 // Run запуск подключаемого пакета
-func (n *Netsrv) Run() {
+func (n *Netsrv) Run(listener net.Listener) {
 	for {
-		conn, err := n.listener.Accept()
+		conn, err := listener.Accept()
 		if err != nil {
 			fmt.Println(err)
 			continue
