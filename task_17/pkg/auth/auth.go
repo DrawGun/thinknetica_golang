@@ -42,9 +42,6 @@ func (a *Auth) authenticate(user db.User) error {
 		return fmt.Errorf("wrong login")
 	}
 
-	// if password != user.Password {
-	// 	return fmt.Errorf("wrong password")
-	// }
 	err := bcrypt.CompareHashAndPassword([]byte(password), []byte(user.Password))
 	if err != nil {
 		return err
