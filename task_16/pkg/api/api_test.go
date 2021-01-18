@@ -96,8 +96,11 @@ func TestService_rawDocs(t *testing.T) {
 }
 
 func TestService_searchDocs(t *testing.T) {
-	url := SEARCH + "?query=Google"
-	req := httptest.NewRequest(http.MethodGet, url, nil)
+	data := map[string]string{
+		"query": "Google",
+	}
+	payload, _ := json.Marshal(data)
+	req := httptest.NewRequest(http.MethodPost, SEARCH, bytes.NewBuffer(payload))
 	rec := httptest.NewRecorder()
 	router.ServeHTTP(rec, req)
 	if !(rec.Code == http.StatusOK) {
@@ -152,7 +155,7 @@ func TestService_updateDoc(t *testing.T) {
 	}
 	payload, _ := json.Marshal(data)
 	url := strings.Replace(DOCUMENT, "{docId}", "1", 1)
-	req := httptest.NewRequest(http.MethodPost, url, bytes.NewBuffer(payload))
+	req := httptest.NewRequest(http.MethodPut, url, bytes.NewBuffer(payload))
 	rec := httptest.NewRecorder()
 	router.ServeHTTP(rec, req)
 	if !(rec.Code == http.StatusOK) {

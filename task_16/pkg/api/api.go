@@ -49,10 +49,10 @@ func (s *Service) Run() {
 func (s *Service) endpoints() {
 	s.router.HandleFunc(IndexedDocuments, s.indexedDocs).Methods(http.MethodGet, http.MethodOptions)
 	s.router.HandleFunc(DOCUMENTS, s.rawDocs).Methods(http.MethodGet, http.MethodOptions)
-	s.router.HandleFunc(SEARCH, s.searchDocs).Methods(http.MethodGet, http.MethodOptions)
+	s.router.HandleFunc(SEARCH, s.searchDocs).Methods(http.MethodPost, http.MethodOptions)
 	s.router.HandleFunc(DOCUMENTS, s.createDoc).Methods(http.MethodPost, http.MethodOptions)
 	s.router.HandleFunc(DOCUMENT, s.getDoc).Methods(http.MethodGet, http.MethodOptions)
-	s.router.HandleFunc(DOCUMENT, s.updateDoc).Methods(http.MethodPost, http.MethodOptions)
+	s.router.HandleFunc(DOCUMENT, s.updateDoc).Methods(http.MethodPut, http.MethodOptions)
 	s.router.HandleFunc(DOCUMENT, s.deleteDoc).Methods(http.MethodDelete, http.MethodOptions)
 }
 
@@ -81,7 +81,14 @@ func (s *Service) rawDocs(w http.ResponseWriter, r *http.Request) {
 func (s *Service) searchDocs(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	q := r.URL.Query().Get("query")
+	b := map[string]string{}
+	err := json.NewDecoder(r.Body).Decode(&b)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	q := b["query"]
 	res, err := s.eng.Search(q)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
