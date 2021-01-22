@@ -7,4 +7,5 @@ require (
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
+  github.com/gorilla/websocket v1.4.2
 )
