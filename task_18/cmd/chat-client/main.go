@@ -6,13 +6,9 @@ import (
 	"log"
 	"os"
 	"strings"
-	"thinknetica_golang/task_18/pkg/api"
 
 	"github.com/gorilla/websocket"
 )
-
-// APIPort константа для указания порта
-const APIPort = ":8888"
 
 // Service представляет собой CLI клиент
 type Service struct {
@@ -34,8 +30,7 @@ func main() {
 }
 
 func (s *Service) dialog() {
-	url := "ws://localhost" + APIPort + api.SendMessagePath
-	conn, _, err := websocket.DefaultDialer.Dial(url, nil)
+	conn, _, err := websocket.DefaultDialer.Dial("ws://localhost:8888/send", nil)
 	if err != nil {
 		log.Fatalf("не удалось подключиться к серверу: %v", err)
 		conn.Close()
@@ -51,14 +46,20 @@ func (s *Service) dialog() {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		fmt.Print("-> ")
-		msg, _ := reader.ReadString('\n')
-		msg = strings.Replace(msg, "\n", "", -1)
+		text, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 
-		if msg == "" {
+		text = strings.ReplaceAll(text, "\r\n", "")
+		text = strings.ReplaceAll(text, "\n", "")
+
+		if strings.Compare("", text) == 0 || strings.Compare("exit", text) == 0 {
 			break
 		}
 
-		err = conn.WriteMessage(websocket.TextMessage, []byte(msg))
+		err = conn.WriteMessage(websocket.TextMessage, []byte(text))
 		if err != nil {
 			conn.Close()
 			log.Fatalf("не удалось отправить сообщение: %v", err)
@@ -73,8 +74,7 @@ func (s *Service) dialog() {
 }
 
 func (s *Service) subscribe() {
-	url := "ws://localhost" + APIPort + api.MessagesPath
-	conn, r, err := websocket.DefaultDialer.Dial(url, nil)
+	conn, r, err := websocket.DefaultDialer.Dial("ws://localhost:8888/messages", nil)
 	if err != nil {
 		fmt.Println(err, r.StatusCode)
 		return
