@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    volumes:
+      - ./pgdata:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: golang_test
+    ports:
+      - 5432:5432
