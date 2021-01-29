@@ -57,14 +57,14 @@ func TestDB_integration(t *testing.T) {
 	}
 
 	var singleMovie model.Movie
-	founded := []model.Movie{}
+	found := []model.Movie{}
 	for _, movie := range movies {
 		if movie.Title == "Movie 111" {
-			founded = append(founded, movie)
+			found = append(found, movie)
 		}
 
 		if movie.Title == "Movie 212" {
-			founded = append(founded, movie)
+			found = append(found, movie)
 		}
 
 		if movie.StudioID == 5 {
@@ -72,8 +72,8 @@ func TestDB_integration(t *testing.T) {
 		}
 	}
 
-	if !reflect.DeepEqual(newMovies, founded) {
-		t.Errorf("got %v; want %v", newMovies, founded)
+	if !reflect.DeepEqual(newMovies, found) {
+		t.Errorf("got %v; want %v", newMovies, found)
 	}
 
 	w1 := 13

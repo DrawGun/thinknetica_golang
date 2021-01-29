@@ -13,7 +13,7 @@ type DB struct {
 	pool *pgxpool.Pool
 }
 
-// New - создает новый экземпляр типа DB
+// New новый экземпляр типа DB
 func New(pool *pgxpool.Pool) *DB {
 	db := DB{
 		pool: pool,
@@ -45,7 +45,7 @@ func (db *DB) InsertMovies(ctx context.Context, movies []model.Movie) error {
 
 // SelectMovies возвращает список фильмов
 func (db *DB) SelectMovies(ctx context.Context, StudioID int) ([]model.Movie, error) {
-	movies := []model.Movie{}
+	var movies []model.Movie
 
 	sql := "SELECT * from MOVIES WHERE studio_id = $1 OR $1 = 0"
 	rows, err := db.pool.Query(ctx, sql, StudioID)
@@ -70,11 +70,7 @@ func (db *DB) SelectMovies(ctx context.Context, StudioID int) ([]model.Movie, er
 		movies = append(movies, m)
 	}
 
-	err = rows.Err()
-	if err != nil {
-		return movies, err
-	}
-	return movies, nil
+	return movies, rows.Err()
 }
 
 // UpdateMovie обновляет фильм
